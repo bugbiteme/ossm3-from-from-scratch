@@ -3,4 +3,4 @@ kind: Kustomization
 resources:
 - rbac.yaml
 - tracing-plugin.yml
-- monitoring-plugin.yaml
+# - monitoring-plugin.yaml

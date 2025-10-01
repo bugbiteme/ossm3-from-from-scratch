@@ -4,8 +4,8 @@ metadata:
   name: istiod-monitor
   namespace: istio-system
 spec:
-  targetLabels:
-  - app
+  # targetLabels:
+  # - app
   selector:
     matchLabels:
       istio: pilot

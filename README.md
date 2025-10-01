@@ -3,14 +3,14 @@ Following official RH documentation
 ---
 Tested on
 ```bash
-Client Version: 4.19.7
+Client Version: 4.19.12
 Kustomize Version: v5.5.0
-Server Version: 4.18.23
-Kubernetes Version: v1.31.11
+Server Version: 4.19.13
+Kubernetes Version: v1.32.8
 ```
 ## Quick Setup 
 
-You can manually install each component via the command line
+You can manually install each component via the command line (reccomended for first time)
 
 ### Operators
 
@@ -21,8 +21,16 @@ oc apply -k operators
 ### MinIO (for s3 storage)
 
 ```
-oc apply -k minio
+oc apply -k minio -n minio
 ```
+
+**Note: At this time you may need to log into the minio console (minio/minio123) and manually create the `tempo-data` bucket**
+
+Attempt to create bucket with job once minio resources are up and running:
+
+```
+oc apply -f minio/minio-create-tempo-bucket.yaml 
+``
 
 ### Enable User Monnitoring
 

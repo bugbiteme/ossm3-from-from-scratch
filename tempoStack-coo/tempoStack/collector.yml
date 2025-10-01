@@ -62,7 +62,13 @@ spec:
             - jaeger
       telemetry:
         metrics:
-          address: 0.0.0.0:8888
+          # address: 0.0.0.0:8888 << removed
+          readers:
+          - pull:
+              exporter:
+                prometheus:
+                  host: 0.0.0.0
+                  port: 8888
   configVersions: 3
   daemonSetUpdateStrategy: {}
   deploymentUpdateStrategy: {}

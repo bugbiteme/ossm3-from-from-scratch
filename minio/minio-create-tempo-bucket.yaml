@@ -31,12 +31,12 @@ spec:
           ENDPOINT="http://minio:9000"
           echo "Probing $ENDPOINT ..."
           # wait for MinIO to accept connections (max ~2 min)
-          for i in $(seq 1 60); do
-            if mc alias set myminio "$ENDPOINT" "$ACCESS" "$SECRET" >/dev/null 2>&1; then
-              echo "MinIO is ready"; break
-            fi
-            echo "[$i/60] waiting for minio..."; sleep 2
-          done
+          # for i in $(seq 1 60); do
+          #   if mc alias set myminio "$ENDPOINT" "$ACCESS" "$SECRET" >/dev/null 2>&1; then
+          #     echo "MinIO is ready"; break
+          #   fi
+          #   echo "[$i/60] waiting for minio..."; sleep 2
+          # done
           # show error if alias still isn’t set
           mc --debug alias set myminio "$ENDPOINT" "$ACCESS" "$SECRET"
           mc mb -p myminio/tempo-data || echo "bucket exists"

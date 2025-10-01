@@ -4,5 +4,5 @@ resources:
 - namespace.yaml
 - minio-creds.yaml               
 - minio.yaml
-# - minio-create-tempo-bucket.yaml 
+- minio-create-tempo-bucket.yaml 
 - rbac.yaml

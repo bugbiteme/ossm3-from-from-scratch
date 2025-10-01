@@ -13,7 +13,8 @@ spec:
         seccompProfile: { type: RuntimeDefault }
       containers:
       - name: mc
-        image: bitnami/minio-client:latest
+        image: quay.io/minio/mc:latest
+        # image: bitnami/minio-client:latest
         securityContext:
           allowPrivilegeEscalation: false
           runAsNonRoot: true

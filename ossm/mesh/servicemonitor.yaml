@@ -8,7 +8,8 @@ spec:
   - app
   selector:
     matchLabels:
-      istio: pilot
+      # istio: pilot
+      istio: default
   endpoints:
   - port: http-monitoring
     interval: 30s

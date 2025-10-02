@@ -32,14 +32,6 @@ oc apply -k operators
 oc apply -k minio -n minio
 ```
 
-**Note: At this time you may need to log into the minio console (minio/minio123) and manually create the `tempo-data` bucket**
-
-Attempt to create bucket with job once minio resources are up and running:
-
-```
-oc apply -f minio/minio-create-tempo-bucket.yaml 
-```
-
 ### Enable User Monnitoring
 
 ```

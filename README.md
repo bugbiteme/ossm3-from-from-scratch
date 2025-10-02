@@ -7,6 +7,14 @@ Client Version: 4.19.12
 Kustomize Version: v5.5.0
 Server Version: 4.19.13
 Kubernetes Version: v1.32.8
+
+DISPLAY                            VERSION                                
+Cluster Observability Operator     1.2.2       
+Kiali Operator                     2.11.3      
+Red Hat OpenShift GitOps           1.18.0      
+Red Hat build of OpenTelemetry     0.135.0-1   
+Red Hat OpenShift Service Mesh 3   3.1.2       
+Tempo Operator                     0.18.0-1    
 ```
 ## Quick Setup 
 
@@ -30,7 +38,7 @@ Attempt to create bucket with job once minio resources are up and running:
 
 ```
 oc apply -f minio/minio-create-tempo-bucket.yaml 
-``
+```
 
 ### Enable User Monnitoring
 
@@ -85,6 +93,17 @@ Once everything is up and running, manually install Kiali (WIP)
 ```
 oc apply -k kiali
 ```
+
+There are some instances where the `bookinfo` and `prod-gateway` deployments need to restart in order to 
+get into a healthy state.
+
+there is a post-gitops-helper.sh script to ensure they are in a healthy state
+
+```
+sh scripts/post-gitops-helper.sh
+```
+
+This will also ensure proxy-injection for the `bookinfo` app
 
 ## Links to sections for more information. Please note that procedures may differ than from above
 

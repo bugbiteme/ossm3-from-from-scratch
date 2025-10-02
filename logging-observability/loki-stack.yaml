@@ -1,0 +1,21 @@
+apiVersion: loki.grafana.com/v1
+kind: LokiStack
+metadata:
+  name: lokistack-sample
+  namespace: openshift-operators-redhat
+spec:
+  hashRing:
+    type: memberlist
+  limits:
+    global:
+      queries:
+        queryTimeout: 3m
+  managementState: Managed
+  size: 1x.small
+  storage:
+    secret:
+      name: logging-loki-aws-s3
+      type: s3
+  storageClassName: gp3-csi
+  tenants:
+    mode: openshift-logging

@@ -1,11 +1,8 @@
 apiVersion: v1
 imagePullSecrets:
-- name: logcollector-dockercfg-4mw7z
+- name: clfotlp-dockercfg-b6n4m
 kind: ServiceAccount
 metadata:
-  annotations:
-    openshift.io/internal-registry-pull-secret-ref: logcollector-dockercfg-4mw7z
-  name: logcollector
+  name: clfotlp
   namespace: openshift-logging
-secrets:
-- name: logcollector-dockercfg-4mw7z
+

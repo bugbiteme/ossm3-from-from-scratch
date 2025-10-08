@@ -1,0 +1,173 @@
+apiVersion: opentelemetry.io/v1beta1
+kind: OpenTelemetryCollector
+metadata:
+  name: otel
+  namespace: openshift-logging
+spec:
+  config:
+    exporters:
+      debug:
+        sampling_initial: 5
+        sampling_thereafter: 200
+        verbosity: detailed
+      otlp: # an external Trace collector eventhough logging does not send traces
+        endpoint: user-collector.apps.example.com:443
+        tls:
+          insecure_skip_verify: true
+      otlphttp/loki:  # an external Loki without authentication
+        endpoint: https://loki.apps.example.com/otlp
+        retry_on_failure:
+          enabled: true
+          initial_interval: 60s
+          max_elapsed_time: 86400s
+          max_interval: 86400s
+        sending_queue:
+          queue_size: 10000000
+          storage: file_storage
+        tls:
+          insecure_skip_verify: true
+      otlphttp/lokistack: # RH LokiStack 
+        endpoint: https://lokistack-distributor-http.openshift-logging.svc.cluster.local:3100/otlp
+        headers:
+          x-scope-orgid: infrastructure # <<< per tenant (infrastructure|application|audit) 
+        tls:
+          ca_file: /lokistack-ca/service-ca.crt
+          cert_file: /lokistack-tls/tls.crt
+          key_file: /lokistack-tls/tls.key
+    extensions:
+      file_storage:  # <<< queuing to avoid issue when any pod in the chain restarts
+        compaction:
+          cleanup_on_start: false
+          directory: /queues/compact/
+          on_start: false
+        create_directory: true
+        directory: /queues/work/
+        fsync: true
+        timeout: 1s
+    processors:
+      batch:
+        send_batch_max_size: 1024
+        send_batch_size: 1024
+      filter/remove_info:
+        error_mode: ignore
+        logs:
+          log_record:
+            - not (IsMatch(severity_text, "(warning|error)"))  # <<< using some OTEL magic to see only warning and errors
+      memory_limiter:
+        check_interval: 1s
+        limit_mib: 1000
+        spike_limit_percentage: 10
+      probabilistic_sampler/infrastructure:  # <<<  using more OTEL magic to reduce the load in small clusters
+        sampling_percentage: 15
+      transform/clustername:  # <<< special OTEL magic but only necessary when consolidating clusters in one loki Instance
+        error_mode: ignore
+        log_statements:
+          - set(log.attributes["openshift_cluster_name"], "central") where resource.attributes["openshift.cluster_id"]
+            == "95673ddb-dc55-4990-881a-33579f9be3c6"
+          - set(log.attributes["openshift_cluster_name"], "east") where resource.attributes["openshift.cluster_id"]
+            == "2d617b15-d32a-4821-908d-66dea1c32468"
+          - set(log.attributes["openshift_cluster_name"], "acm") where resource.attributes["openshift.cluster_id"]
+            == "773b08d3-5f50-4db6-82ce-e6facb5d32f8"
+          - set(log.attributes["openshift_cluster_name"], "hcp1") where resource.attributes["openshift.cluster_id"]
+            == "b41edf72-e80b-4466-a348-934734bf2716"
+          - set(log.attributes["openshift_cluster_name"], "hcp2") where resource.attributes["openshift.cluster_id"]
+            == "91c310d1-0bc9-43e8-90d6-841c14f2083a"
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
+    service:
+      extensions:
+        - file_storage
+      pipelines:
+        logs:
+          exporters:
+            - otlphttp/loki
+            - otlphttp/lokistack
+          processors:
+            - memory_limiter
+            - batch
+            - filter/remove_info
+            - transform/clustername
+            - probabilistic_sampler/infrastructure
+          receivers:
+            - otlp
+        traces:
+          exporters:
+            - otlp
+          processors:
+            - memory_limiter
+            - batch
+          receivers:
+            - otlp
+      telemetry:
+        metrics:
+          readers:
+            - pull:
+                exporter:
+                  prometheus:
+                    host: 0.0.0.0
+                    port: 8888
+  configVersions: 3
+  daemonSetUpdateStrategy: {}
+  deploymentUpdateStrategy: {}
+  image: quay.chester.at/otel/opentelemetry-collector-contrib:latest
+  ingress:
+    route: {}
+  ipFamilyPolicy: SingleStack
+  managementState: managed
+  mode: statefulset
+  networkPolicy:
+    enabled: true
+  observability:
+    metrics: {}
+  podDnsConfig: {}
+  replicas: 1
+  resources: {}
+  targetAllocator:
+    allocationStrategy: consistent-hashing
+    collectorNotReadyGracePeriod: 30s
+    collectorTargetReloadInterval: 30s
+    filterStrategy: relabel-config
+    observability:
+      metrics: {}
+    prometheusCR:
+      scrapeInterval: 30s
+    resources: {}
+  upgradeStrategy: automatic
+  volumeClaimTemplates:
+    - metadata:
+        name: otel-queue
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
+        storageClassName: gp3-csi  
+      status: {}
+  volumeMounts:
+    - mountPath: /queues
+      name: otel-queue
+    - mountPath: /lokistack-tls
+      name: lokistack-tls
+    - mountPath: /lokistack-ca
+      name: lokistack-ca
+  volumes:
+    - name: lokistack-tls
+      secret:
+        items:
+          - key: tls.crt
+            path: tls.crt
+          - key: tls.key
+            path: tls.key
+        secretName: lokistack-gateway-client-http
+    - configMap:
+        items:
+          - key: service-ca.crt
+            path: service-ca.crt
+        name: lokistack-ca-bundle
+      name: lokistack-ca

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: s3-storage
+  namespace: openshift-logging
+stringData:
+  access_key_id: minio
+  access_key_secret: minio123
+  bucketnames: loki-data
+  endpoint: http://minio.minio.svc.cluster.local:9000
+  # forcepathstyle: dHJ1ZQ==
+  region: us-east-1 

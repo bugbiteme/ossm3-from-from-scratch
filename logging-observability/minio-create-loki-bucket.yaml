@@ -1,0 +1,80 @@
+# minio-create-tempo-bucket.yaml (Simplified and Fixed)
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: minio-create-loki-bucket
+  namespace: openshift-logging
+spec:
+  # The job will retry up to 5 times if it fails
+  backoffLimit: 5 
+  template:
+    spec:
+      serviceAccountName: default 
+      restartPolicy: OnFailure 
+      containers:
+      - name: create-bucket
+        image: minio/mc:latest 
+        
+        env:
+        - name: MINIO_ENDPOINT
+          valueFrom:
+            secretKeyRef:
+              name: s3-storage
+              key: endpoint
+        - name: MINIO_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: s3-storage
+              key: access_key_id
+        - name: MINIO_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: s3-storage
+              key: access_key_secret
+        - name: MINIO_BUCKET_NAME
+          valueFrom:
+            secretKeyRef:
+              name: s3-storage
+              key: bucketnames
+
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            # Set the config directory to a writable location to avoid 'permission denied'
+            export MC_CONFIG_DIR="/tmp/.mc"
+            
+            # 💡 Remove the curl loop and rely on Kubernetes Job backoff/retry.
+            # If MinIO is not ready, 'mc alias set' will fail, and the job will restart.
+
+            # 1. Alias the MinIO service endpoint
+            echo "Attempting to set MinIO alias using endpoint: $MINIO_ENDPOINT"
+            /usr/bin/mc alias set \
+              myminio \
+              "$MINIO_ENDPOINT" \
+              "$MINIO_ACCESS_KEY" \
+              "$MINIO_SECRET_KEY" \
+              --api S3v4
+            
+            # Check if alias command succeeded
+            if [ $? -ne 0 ]; then
+                echo "❌ Failed to set MinIO alias. MinIO service might not be ready."
+                exit 1 # Forces the job to fail and retry
+            fi
+
+            # 2. Check if the bucket exists and create it if not.
+            echo "Attempting to create bucket: $MINIO_BUCKET_NAME"
+            if /usr/bin/mc ls myminio/"$MINIO_BUCKET_NAME" > /dev/null 2>&1; then
+              echo "✅ Bucket '$MINIO_BUCKET_NAME' already exists. Skipping creation."
+            else
+              echo "Bucket '$MINIO_BUCKET_NAME' not found. Creating..."
+              /usr/bin/mc mb myminio/"$MINIO_BUCKET_NAME"
+              if [ $? -eq 0 ]; then
+                echo "✅ Bucket '$MINIO_BUCKET_NAME' created successfully."
+              else
+                echo "❌ Error creating bucket '$MINIO_BUCKET_NAME'. Check MinIO server logs."
+                exit 1 
+              fi
+            fi
+            
+            # 3. Clean up the alias
+            /usr/bin/mc alias remove myminio

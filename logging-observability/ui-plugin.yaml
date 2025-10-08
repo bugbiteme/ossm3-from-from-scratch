@@ -1,0 +1,12 @@
+apiVersion: observability.openshift.io/v1alpha1
+kind: UIPlugin
+metadata:
+  annotations:
+    observability.openshift.io/api-support: GeneralAvailability
+  name: logging
+spec:
+  logging:
+    logsLimit: 20
+    schema: otel
+    timeout: 5m
+  type: Logging

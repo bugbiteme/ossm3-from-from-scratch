@@ -1,0 +1,35 @@
+apiVersion: observability.openshift.io/v1alpha1
+kind: UIPlugin
+metadata:
+  annotations:
+    observability.openshift.io/api-support: GeneralAvailability
+  name: logging
+spec:
+  logging:
+    logsLimit: 20
+    schema: otel
+    timeout: 5m
+  type: Logging
+---
+
+apiVersion: observability.openshift.io/v1alpha1
+kind: UIPlugin
+metadata:
+  annotations:
+    observability.openshift.io/api-support: TechPreview
+  name: monitoring
+spec:
+  monitoring:
+    incidents:
+      enabled: true
+  type: Monitoring
+---
+
+apiVersion: observability.openshift.io/v1alpha1
+kind: UIPlugin
+metadata:
+  annotations:
+    observability.openshift.io/api-support: TechPreview
+  name: troubleshooting-panel
+spec:
+  type: TroubleshootingPanel

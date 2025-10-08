@@ -114,7 +114,8 @@ spec:
   configVersions: 3
   daemonSetUpdateStrategy: {}
   deploymentUpdateStrategy: {}
-  image: quay.chester.at/otel/opentelemetry-collector-contrib:latest
+  image: otel/opentelemetry-collector-contrib:latest
+  #image: quay.chester.at/otel/opentelemetry-collector-contrib:latest
   ingress:
     route: {}
   ipFamilyPolicy: SingleStack

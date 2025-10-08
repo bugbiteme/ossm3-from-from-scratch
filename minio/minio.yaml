@@ -2,9 +2,6 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  labels:
-    istio-discovery: enabled
-    istio-injection: enabled
   name: minio
   namespace: minio
 spec:

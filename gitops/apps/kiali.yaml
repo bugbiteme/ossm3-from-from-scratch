@@ -14,7 +14,7 @@ items:
     source:
       path: kiali
       repoURL: https://github.com/bugbiteme/ossm3-from-from-scratch.git
-      targetRevision: main
+      targetRevision: dev
     syncPolicy:
       automated:
         selfHeal: false

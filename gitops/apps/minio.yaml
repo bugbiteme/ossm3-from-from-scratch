@@ -15,7 +15,7 @@ items:
     source:
       path: minio
       repoURL: https://github.com/bugbiteme/ossm3-from-from-scratch.git
-      targetRevision: main
+      targetRevision: dev
     syncPolicy:
       automated:
         selfHeal: true

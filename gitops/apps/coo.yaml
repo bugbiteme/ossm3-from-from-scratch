@@ -6,7 +6,7 @@ items:
     name: cluster-observability-plugin
     namespace: openshift-gitops
     annotations:
-      argocd.argoproj.io/sync-wave: "20"
+      argocd.argoproj.io/sync-wave: "6"
   spec:
     destination:
       server: https://kubernetes.default.svc

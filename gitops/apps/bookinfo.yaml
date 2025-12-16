@@ -6,7 +6,7 @@ items:
     name: bookinfo
     namespace: openshift-gitops
     annotations:
-      argocd.argoproj.io/sync-wave: "60"
+      argocd.argoproj.io/sync-wave: "7"
   spec:
     destination:
       server: https://kubernetes.default.svc

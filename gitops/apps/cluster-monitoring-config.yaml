@@ -6,7 +6,7 @@ items:
     name: cluster-monitoring-config
     namespace: openshift-gitops
     annotations:
-      argocd.argoproj.io/sync-wave: "10"
+      argocd.argoproj.io/sync-wave: "2"
   spec:
     destination:
       server: https://kubernetes.default.svc

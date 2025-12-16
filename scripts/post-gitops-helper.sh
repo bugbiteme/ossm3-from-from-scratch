@@ -9,3 +9,9 @@ for i in bookinfo prod-gateway
 do 
   oc -n $i get deploy -o name | xargs -r -L1 oc -n $i rollout restart
 done
+
+# Bookinfo Traffic Generator
+
+export INGRESSHOST=$(oc get route istio-ingressgateway -n prod-gateway -o=jsonpath='{.spec.host}')
+cat ./bookinfo/bookinfo-traffic-gen/traffic-generator-configmap.yaml | ROUTE="https://${INGRESSHOST}/productpage" envsubst | oc -n bookinfo apply -f - 
+oc apply -f ./bookinfo/bookinfo-traffic-gen/traffic-generator.yaml -n bookinfo

@@ -3,18 +3,18 @@ Following official RH documentation
 ---
 Tested on
 ```bash
-Client Version: 4.19.12
-Kustomize Version: v5.5.0
-Server Version: 4.19.13
-Kubernetes Version: v1.32.8
+Client Version: 4.20.6
+Kustomize Version: v5.6.0
+Server Version: 4.20.6
+Kubernetes Version: v1.33.5
 
 DISPLAY                            VERSION                                
-Cluster Observability Operator     1.2.2       
-Kiali Operator                     2.11.3      
-Red Hat OpenShift GitOps           1.18.0      
-Red Hat build of OpenTelemetry     0.135.0-1   
-Red Hat OpenShift Service Mesh 3   3.1.2       
-Tempo Operator                     0.18.0-1    
+Cluster Observability Operator     1.3.0      
+Kiali Operator                     2.17.2    
+Red Hat OpenShift GitOps           1.18.2      
+Red Hat build of OpenTelemetry     0.140.0-1 
+Red Hat OpenShift Service Mesh 3   3.2.1       
+Tempo Operator                     0.19.0-1   
 ```
 ## Quick Setup 
 

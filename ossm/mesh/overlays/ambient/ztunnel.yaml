@@ -1,7 +1,8 @@
 apiVersion: sailoperator.io/v1
-kind: IstioCNI
+kind: ZTunnel
 metadata:
   name: default
-  namespace: istio-cni
 spec:
-  version: v1.24-latest
+  namespace: ztunnel
+  profile: ambient
+

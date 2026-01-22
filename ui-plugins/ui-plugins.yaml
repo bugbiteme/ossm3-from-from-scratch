@@ -16,7 +16,7 @@ apiVersion: observability.openshift.io/v1alpha1
 kind: UIPlugin
 metadata:
   annotations:
-    observability.openshift.io/api-support: TechPreview
+    observability.openshift.io/api-support: GeneralAvailability
   name: monitoring
 spec:
   monitoring:
@@ -29,7 +29,7 @@ apiVersion: observability.openshift.io/v1alpha1
 kind: UIPlugin
 metadata:
   annotations:
-    observability.openshift.io/api-support: TechPreview
+    observability.openshift.io/api-support: GeneralAvailability
   name: troubleshooting-panel
 spec:
   type: TroubleshootingPanel
